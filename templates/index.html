@@ -1,20 +1,33 @@
 <!DOCTYPE html>
 
-<html>
+<html lang="es">
 
 <head>
 
 <meta charset="UTF-8">
 
-<title>Soluciones Locales</title>
+<meta
+name="viewport"
+content="width=device-width,initial-scale=1">
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<title>
+
+Soluciones Locales
+
+</title>
+
+
+<link
+href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+rel="stylesheet">
+
 
 <style>
 
 body{
 
 background:
+
 linear-gradient(
 135deg,
 #0f172a,
@@ -22,47 +35,132 @@ linear-gradient(
 #2563eb
 );
 
+min-height:100vh;
+
 color:white;
 
-min-height:100vh;
+padding-bottom:80px;
 
 }
 
+
+.header{
+
+padding:30px;
+
+text-align:center;
+
+}
+
+
+.logo{
+
+font-size:42px;
+
+}
+
+
 .cardx{
 
-background:white;
+background:
+
+rgba(
+255,
+255,
+255,
+0.95
+);
 
 color:black;
 
-border-radius:20px;
+border-radius:24px;
 
 padding:20px;
 
 margin-top:20px;
 
+box-shadow:
+
+0 15px 40px
+rgba(
+0,
+0,
+0,
+0.3
+);
+
 }
+
 
 .perfil{
 
-width:100px;
+width:120px;
 
-height:100px;
+height:120px;
 
 border-radius:50%;
 
 object-fit:cover;
 
+border:
+
+5px solid
+#2563eb;
+
 }
+
+
+.galeria{
+
+display:flex;
+
+gap:10px;
+
+overflow:auto;
+
+}
+
 
 .galeria img{
 
-width:100%;
+width:150px;
 
-height:120px;
+height:150px;
 
 object-fit:cover;
 
-border-radius:10px;
+border-radius:16px;
+
+}
+
+
+.preview{
+
+width:100px;
+
+height:100px;
+
+object-fit:cover;
+
+border-radius:15px;
+
+margin:5px;
+
+}
+
+
+button{
+
+border-radius:14px !important;
+
+}
+
+
+input,
+select,
+textarea{
+
+border-radius:12px !important;
 
 }
 
@@ -72,25 +170,63 @@ border-radius:10px;
 
 <body>
 
-<div class="container">
 
-<h1 class="text-center mt-4">
+<div
+class="container">
 
-🛠️ Soluciones Locales
+
+<div
+class="header">
+
+<div
+class="logo">
+
+🛠️
+
+</div>
+
+<h1>
+
+Soluciones Locales
 
 </h1>
 
-<div class="cardx">
+<p>
 
-<h4>Buscar</h4>
+Encontrá profesionales cerca tuyo
 
-<select id="oficio"></select>
+</p>
 
-<select id="ciudad" class="mt-2"></select>
+</div>
+
+
+
+<div
+class="cardx">
+
+<h3>
+
+Buscar Servicios
+
+</h3>
+
+<select
+id="buscar_oficio"
+class="form-control mb-2">
+
+</select>
+
+
+<select
+id="buscar_ciudad"
+class="form-control mb-3">
+
+</select>
+
 
 <button
 onclick="buscar()"
-class="btn btn-primary mt-3">
+class="btn btn-primary w-100">
 
 Buscar
 
@@ -99,75 +235,129 @@ Buscar
 </div>
 
 
-<div class="cardx">
 
-<h4>Publicar Servicio</h4>
 
-<form id="form">
+<div
+class="cardx">
+
+<h3>
+
+Ofrecer Servicio
+
+</h3>
+
+
+<form
+id="form">
+
 
 <input
 name="nombre"
 placeholder="Nombre"
-class="form-control mb-2">
+class="form-control mb-2"
+required>
+
 
 <input
 name="apellido"
 placeholder="Apellido"
-class="form-control mb-2">
+class="form-control mb-2"
+required>
+
 
 <input
 name="email"
-class="form-control mb-2">
+type="email"
+placeholder="Email"
+class="form-control mb-2"
+required>
+
+
+<input
+name="password"
+type="password"
+placeholder="Contraseña"
+class="form-control mb-2"
+required>
+
 
 <input
 name="telefono"
-class="form-control mb-2">
+placeholder="WhatsApp"
+class="form-control mb-2"
+required>
+
 
 <select
 name="ciudad"
-id="ciudad2"
+id="ciudad"
 class="form-control mb-2">
 
 </select>
+
 
 <select
 name="oficio"
-id="oficio2"
+id="oficio"
 class="form-control mb-2">
 
 </select>
 
+
 <textarea
 name="descripcion"
-class="form-control">
+placeholder="Contanos sobre tu servicio"
+class="form-control mb-2">
 
 </textarea>
 
-<label class="mt-3">
+
+
+<label>
 
 Foto Perfil
 
 </label>
 
+
 <input
 type="file"
 name="perfil"
+id="perfil"
 class="form-control">
+
+
+<img
+id="previewPerfil"
+class="preview">
+
+
+<br><br>
+
 
 <label>
 
-3 imágenes
+3 Fotos
 
 </label>
 
+
 <input
 multiple
-name="trabajos"
 type="file"
+name="trabajos"
+id="trabajos"
 class="form-control">
 
+
+<div
+id="previewTrabajos">
+
+</div>
+
+
 <button
-class="btn btn-success mt-3">
+class="btn btn-success w-100 mt-3">
 
 Publicar
 
@@ -177,75 +367,229 @@ Publicar
 
 </div>
 
-<div id="resultados"></div>
+
+
+<div
+id="resultados">
 
 </div>
 
+
+</div>
+
+
+
 <script>
+
 
 async function init(){
 
 let o=
-await fetch("/categorias")
+await fetch(
+"/categorias"
+)
 
 o=
 await o.json()
 
+
 let c=
-await fetch("/ciudades")
+await fetch(
+"/ciudades"
+)
 
 c=
 await c.json()
 
-for(let s of[
-oficio,
-oficio2
-]){
+
+
+for(
+let s
+of
+[
+buscar_oficio,
+oficio
+]
+){
 
 s.innerHTML=
+
 o.map(
+
 x=>
-`<option>${x}</option>`
+
+`<option>
+
+${x}
+
+</option>`
+
 )
 
 }
 
-for(let s of[
-ciudad,
-ciudad2
-]){
+
+
+for(
+let s
+of
+[
+buscar_ciudad,
+ciudad
+]
+){
 
 s.innerHTML=
+
 c.map(
+
 x=>
-`<option>${x}</option>`
+
+`<option>
+
+${x}
+
+</option>`
+
 )
 
 }
 
 }
+
+
+
+perfil.onchange=
+
+e=>{
+
+previewPerfil.src=
+
+URL.createObjectURL(
+
+e.target.files[0]
+
+)
+
+}
+
+
+
+trabajos.onchange=
+
+e=>{
+
+previewTrabajos.innerHTML=
+
+""
+
+
+for(
+
+let f
+
+of
+
+e.target.files
+
+){
+
+previewTrabajos.innerHTML+=
+
+`
+
+<img
+src="${URL.createObjectURL(f)}"
+class="preview">
+
+`
+
+}
+
+}
+
+
+
+form.onsubmit=
+
+async e=>{
+
+e.preventDefault()
+
+let fd=
+
+new FormData(form)
+
+
+await fetch(
+
+"/register",
+
+{
+
+method:
+
+"POST",
+
+body:
+
+fd
+
+}
+
+)
+
+
+alert(
+
+"Servicio publicado"
+
+)
+
+form.reset()
+
+}
+
+
 
 async function buscar(){
 
 let r=
+
 await fetch(
-`/buscar?oficio=${oficio.value}&ciudad=${ciudad.value}`
+
+`/buscar?oficio=${buscar_oficio.value}&ciudad=${buscar_ciudad.value}`
+
 )
 
 r=
+
 await r.json()
 
-resultados.innerHTML=""
 
-r.forEach(x=>{
+resultados.innerHTML=
 
-resultados.innerHTML+=`
+""
 
-<div class='cardx'>
+
+r.forEach(
+
+x=>{
+
+
+resultados.innerHTML+=
+
+`
+
+<div class="cardx">
+
+<div class="text-center">
 
 <img
-src='${x.perfil}'
-class='perfil'>
+src="${x.perfil}"
+class="perfil">
+
+</div>
 
 <h3>
 
@@ -253,11 +597,37 @@ ${x.nombre}
 
 </h3>
 
-<b>
+<p>
+
+⭐
+
+${x.estrellas}
+
+</p>
+
+<p>
+
+❤️
+
+${x.favoritos}
+
+</p>
+
+<p>
+
+📍
+
+${x.ciudad}
+
+</p>
+
+<p>
+
+🛠️
 
 ${x.oficio}
 
-</b>
+</p>
 
 <p>
 
@@ -265,22 +635,59 @@ ${x.descripcion}
 
 </p>
 
-<p>
+<a
+target="_blank"
+href="https://wa.me/${x.telefono}"
+class="btn btn-success">
 
-📞 ${x.telefono}
+WhatsApp
 
-</p>
+</a>
 
-<div class='row galeria'>
+<button
 
-${x.imagenes
-.filter(i=>i)
+onclick="fav(${x.id})"
+
+class="btn btn-danger">
+
+❤️
+
+</button>
+
+
+<div
+class="galeria mt-3">
+
+${
+
+x.imagenes
+
+.filter(
+
+i=>i
+
+)
+
 .map(
+
 i=>
-`<div class='col'>
-<img src='${i}'>
-</div>`
-).join("")}
+
+`
+
+<img
+src="${i}">
+
+`
+
+)
+
+.join(
+
+""
+
+)
+
+}
 
 </div>
 
@@ -288,37 +695,36 @@ i=>
 
 `
 
-})
+}
+
+)
 
 }
 
-form.onsubmit=
-async e=>{
 
-e.preventDefault()
 
-let fd=
-new FormData(form)
+async function fav(
+
+id
+
+){
 
 await fetch(
-"/register",
-{
-method:"POST",
-body:fd
-}
+
+"/favorito/"+id
+
 )
 
-alert(
-"Publicado"
-)
-
-form.reset()
+buscar()
 
 }
+
+
 
 init()
 
 </script>
+
 
 </body>
 
