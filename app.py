@@ -1,45 +1,194 @@
 from flask import Flask, request, jsonify, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
+from werkzeug.utils import secure_filename
+import os
 
-app = Flask(__name__, template_folder='templates')
+app = Flask(__name__)
+
 CORS(app)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///soluciones.db'
+
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///soluciones.db"
+app.config["UPLOAD_FOLDER"] = "static/uploads"
+
 db = SQLAlchemy(app)
 
-# Listas definitivas
-CIUDADES = ["Asunción", "Ciudad del Este", "Encarnación", "Luque", "San Lorenzo", "Capiatá", "Lambaré", "Fernando de la Mora", "Limpio", "Mariano Roque Alonso"]
-OFICIOS = sorted(["Electricista", "Plomero", "Albañil", "Carpintero", "Pintor", "Herrero", "Jardinero", "Mecánico", "Técnico de PCs", "Diseñador Gráfico", "Desarrollador Web", "Fotógrafo", "Chofer", "Delivery", "Profesor", "Peluquero", "Masajista", "Cocinero", "Limpieza", "Cerrajero", "Gasista", "Soldador", "Vendedor", "Abogado", "Contador"])
+os.makedirs("static/uploads/perfiles", exist_ok=True)
+os.makedirs("static/uploads/trabajos", exist_ok=True)
+
+CIUDADES = [
+"Asunción","Ciudad del Este","Encarnación",
+"Luque","San Lorenzo","Capiatá"
+]
+
+OFICIOS = sorted([
+"Electricista",
+"Plomero",
+"Albañil",
+"Carpintero",
+"Pintor",
+"Herrero",
+"Jardinero",
+"Mecánico",
+"Técnico de PCs",
+"Diseñador Gráfico",
+"Desarrollador Web",
+"Fotógrafo",
+"Chofer",
+"Delivery",
+"Profesor",
+"Peluquero",
+"Cocinero",
+"Limpieza",
+"Cerrajero"
+])
+
 
 class Usuario(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+
     nombre = db.Column(db.String(100))
     apellido = db.Column(db.String(100))
+
     email = db.Column(db.String(100))
-    telefono = db.Column(db.String(50))
+    telefono = db.Column(db.String(100))
+
     ciudad = db.Column(db.String(100))
     oficio = db.Column(db.String(100))
+
     descripcion = db.Column(db.Text)
 
-with app.app_context(): db.create_all()
+    perfil = db.Column(db.String(300))
 
-@app.route('/')
-def home(): return render_template('index.html')
+    img1 = db.Column(db.String(300))
+    img2 = db.Column(db.String(300))
+    img3 = db.Column(db.String(300))
 
-@app.route('/categorias')
-def get_cat(): return jsonify(OFICIOS)
 
-@app.route('/ciudades')
-def get_ciu(): return jsonify(CIUDADES)
+with app.app_context():
+    db.create_all()
 
-@app.route('/register', methods=['POST'])
+
+@app.route("/")
+def home():
+    return render_template("index.html")
+
+
+@app.route("/categorias")
+def categorias():
+    return jsonify(OFICIOS)
+
+
+@app.route("/ciudades")
+def ciudades():
+    return jsonify(CIUDADES)
+
+
+def guardar(f, carpeta):
+
+    if not f or f.filename == "":
+        return ""
+
+    nombre = secure_filename(f.filename)
+
+    ruta = os.path.join(
+        app.config["UPLOAD_FOLDER"],
+        carpeta,
+        nombre
+    )
+
+    f.save(ruta)
+
+    return "/" + ruta
+
+
+@app.route("/register", methods=["POST"])
 def register():
+
     data = request.form
-    nuevo = Usuario(nombre=data.get('nombre'), apellido=data.get('apellido'), email=data.get('email'), 
-                    telefono=data.get('telefono'), ciudad=data.get('ciudad'), oficio=data.get('oficio'), 
-                    descripcion=data.get('descripcion'))
+
+    perfil = guardar(
+        request.files.get("perfil"),
+        "perfiles"
+    )
+
+    imgs = request.files.getlist("trabajos")
+
+    rutas = []
+
+    for i in imgs[:3]:
+
+        rutas.append(
+            guardar(i, "trabajos")
+        )
+
+    while len(rutas) < 3:
+        rutas.append("")
+
+    nuevo = Usuario(
+        nombre=data["nombre"],
+        apellido=data["apellido"],
+        email=data["email"],
+        telefono=data["telefono"],
+        ciudad=data["ciudad"],
+        oficio=data["oficio"],
+        descripcion=data["descripcion"],
+        perfil=perfil,
+        img1=rutas[0],
+        img2=rutas[1],
+        img3=rutas[2]
+    )
+
     db.session.add(nuevo)
     db.session.commit()
-    return jsonify({"status": "ok"})
 
-if __name__ == '__main__': app.run()
+    return jsonify({"ok": True})
+
+
+@app.route("/buscar")
+def buscar():
+
+    ciudad = request.args.get("ciudad")
+    oficio = request.args.get("oficio")
+
+    q = Usuario.query
+
+    if ciudad:
+        q = q.filter_by(ciudad=ciudad)
+
+    if oficio:
+        q = q.filter_by(oficio=oficio)
+
+    usuarios = q.all()
+
+    return jsonify([
+        {
+            "nombre":
+            f"{u.nombre} {u.apellido}",
+
+            "oficio":
+            u.oficio,
+
+            "telefono":
+            u.telefono,
+
+            "descripcion":
+            u.descripcion,
+
+            "perfil":
+            u.perfil,
+
+            "imagenes":
+            [
+                u.img1,
+                u.img2,
+                u.img3
+            ]
+        }
+
+        for u in usuarios
+    ])
+
+
+if __name__ == "__main__":
+    app.run(debug=True)
