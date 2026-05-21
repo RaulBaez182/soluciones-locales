@@ -5,63 +5,60 @@
     <title>Soluciones Locales</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body { background: #f4f6f9; padding-bottom: 80px; }
-        .container-app { max-width: 480px; margin: 0 auto; }
-        .app-header { background: #1e3c72; color: white; padding: 20px; text-align: center; }
-        .nav-fixed-bottom { position: fixed; bottom: 0; width: 100%; max-width: 480px; background: white; display: flex; justify-content: space-around; padding: 10px; border-top: 1px solid #ddd; z-index: 1000; }
+        body { background: linear-gradient(135deg, #e0eafc, #cfdef3); min-height: 100vh; font-family: 'Segoe UI', sans-serif; padding-bottom: 80px; }
+        .app-header { background: #1e3c72; color: white; padding: 25px; text-align: center; border-bottom: 5px solid #ffc107; }
+        .card-custom { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-top: 20px; }
+        .nav-fixed { position: fixed; bottom: 0; width: 100%; background: #ffffff; display: flex; justify-content: space-around; padding: 15px; border-top: 2px solid #ddd; }
     </style>
 </head>
 <body>
-<div class="container-app">
+<div class="container" style="max-width: 500px;">
     <div class="app-header"><h1>🛠️ Soluciones Locales</h1></div>
     
-    <div id="pantalla-buscar" class="px-3 mt-3">
-        <select id="search-oficio" class="form-select mb-2"></select>
-        <select id="search-ciudad" class="form-select mb-2"></select>
-        <button class="btn btn-primary w-100" onclick="alert('Buscando...')">Buscar</button>
+    <div id="pantalla-buscar" class="card-custom">
+        <h5 class="text-center">Buscar Profesionales</h5>
+        <select id="search-oficio" class="form-select mb-3"><option>Cargando oficios...</option></select>
+        <select id="search-ciudad" class="form-select mb-3"><option>Cargando ciudades...</option></select>
+        <button class="btn btn-primary w-100">Buscar Ahora</button>
     </div>
 
-    <div id="pantalla-registro" class="d-none px-3 mt-3">
-        <form id="form-registro" onsubmit="registrar(event)">
+    <div id="pantalla-registro" class="d-none card-custom">
+        <h5 class="text-center">Ofrecer Servicio</h5>
+        <form id="form-registro" onsubmit="reg(event)">
             <input type="text" name="nombre" class="form-control mb-2" placeholder="Nombre" required>
             <input type="text" name="apellido" class="form-control mb-2" placeholder="Apellido" required>
             <input type="email" name="email" class="form-control mb-2" placeholder="Email" required>
             <input type="text" name="telefono" class="form-control mb-2" placeholder="Teléfono" required>
             <select name="ciudad" id="reg-ciudad" class="form-select mb-2" required></select>
             <select name="oficio" id="reg-oficio" class="form-select mb-2" required></select>
-            <textarea name="descripcion" class="form-control mb-2" placeholder="Descripción"></textarea>
-            <button type="submit" class="btn btn-success w-100">Registrarme</button>
+            <textarea name="descripcion" class="form-control mb-2" placeholder="Descripción de tu servicio"></textarea>
+            <button type="submit" class="btn btn-success w-100">Publicar mi Servicio</button>
         </form>
     </div>
 </div>
 
-<div class="nav-fixed-bottom">
-    <button class="btn btn-link" onclick="mostrar('buscar')">🔍 Buscar</button>
-    <button class="btn btn-link" onclick="mostrar('registro')">💼 Ofrecer</button>
+<div class="nav-fixed">
+    <button class="btn btn-outline-primary" onclick="mostrar('buscar')">🔍 Buscar</button>
+    <button class="btn btn-outline-success" onclick="mostrar('registro')">💼 Ofrecer</button>
 </div>
 
 <script>
-    async function cargarDatos() {
-        const [resO, resC] = await Promise.all([fetch('/categorias'), fetch('/ciudades')]);
-        const oficios = await resO.json();
-        const ciudades = await resC.json();
-        
+    async function init() {
+        const [oRes, cRes] = await Promise.all([fetch('/categorias'), fetch('/ciudades')]);
+        const oficios = await oRes.json(); const ciudades = await cRes.json();
         document.querySelectorAll('select[id$="-oficio"]').forEach(s => s.innerHTML = oficios.map(o => `<option value="${o}">${o}</option>`).join(''));
         document.querySelectorAll('select[id$="-ciudad"]').forEach(s => s.innerHTML = ciudades.map(c => `<option value="${c}">${c}</option>`).join(''));
     }
-
-    async function registrar(e) {
+    async function reg(e) {
         e.preventDefault();
         const res = await fetch('/register', { method: 'POST', body: new FormData(e.target) });
-        if(res.ok) { alert("¡Registro exitoso!"); e.target.reset(); mostrar('buscar'); }
-        else { alert("Error al registrar."); }
+        if(res.ok) { alert("¡Publicado con éxito!"); e.target.reset(); mostrar('buscar'); }
     }
-
     function mostrar(p) {
         document.getElementById('pantalla-buscar').classList.toggle('d-none', p !== 'buscar');
         document.getElementById('pantalla-registro').classList.toggle('d-none', p !== 'registro');
     }
-    window.onload = cargarDatos;
+    window.onload = init;
 </script>
 </body>
 </html>
