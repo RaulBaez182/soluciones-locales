@@ -2,46 +2,51 @@ from flask import Flask, request, jsonify, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import os
+import uuid
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__, template_folder='templates')
 CORS(app)
 
-# Base de datos
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///soluciones_locales_v2.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///soluciones.db'
+app.config['UPLOAD_FOLDER'] = 'uploads'
 db = SQLAlchemy(app)
 
-# Lista completa de 100+ oficios
-OFICIOS = sorted([
-    "Electricista", "Plomero", "Albañil", "Carpintero", "Pintor", "Herrero", "Jardinero", 
-    "Mecánico Automotriz", "Técnico de PCs", "Técnico de Celulares", "Diseñador Gráfico", 
-    "Programador Android", "Desarrollador Web", "Fotógrafo", "Videógrafo", "Chofer Privado", 
-    "Delivery", "Profesor Particular", "Tatuador", "Peluquero", "Barbero", "Manicurista", 
-    "Maquilladora", "Fisioterapeuta", "Enfermera", "Masajista", "Cocinero", "Pastelero", 
-    "Limpieza", "Técnico Aire Acondicionado", "Cerrajero", "Tapicero", "Vidriero", 
-    "Mudanzas", "Contador", "Abogado", "Arquitecto", "Ingeniero", "Sastre", "Veterinario", 
-    "Paseador de Perros", "Animador", "DJ", "Instalador de Cámaras", "Reparador Electrodomésticos", 
-    "Gasista", "Techista", "Colocador de Pisos", "Yesero", "Fumigador", "Lavador de Autos", 
-    "Personal Trainer", "Instructor de Yoga", "Nutricionista", "Psicólogo", "Profesor de Música", 
-    "Carpintero de Aluminio", "Decorador", "Editor de Video", "Community Manager", "Seguridad", 
-    "Guía Turístico", "Impermeabilizador", "Instalador Paneles Solares", "Luthier", 
-    "Maestro Pizzero", "Organizador de Eventos", "Panadero", "Pedicuro", "Pintor Automotriz", 
-    "Secretaria Virtual", "Sommelier", "Técnico Refrigeración", "Técnico Electromecánico", 
-    "Traductor", "Tornero", "Zinguero", "Vendedor Inmobiliario", "Modelador 3D", "Modisto",
-    "Auxiliar Administrativo", "Bartender", "Cajero", "Comprador", "Controlador de Calidad",
-    "Cuidado de Ancianos", "Empleado de Comercio", "Esteticista", "Gestor de Trámites",
-    "Instalador de Alarmas", "Jardinero de Altura", "Lavandero", "Mecanógrafo",
-    "Montajista", "Operador de Máquinas", "Pizzero", "Recepcionista", "Reparador de Computadoras",
-    "Sereno", "Soldador", "Técnico en Seguridad e Higiene", "Telefonista", "Vendedor"
-])
+# Lista de Ciudades y Oficios
+CIUDADES = ["Asunción", "Ciudad del Este", "Encarnación", "Luque", "San Lorenzo", "Capiatá", "Lambaré", "Fernando de la Mora", "Limpio", "Mariano Roque Alonso"]
+OFICIOS = sorted(["Electricista", "Plomero", "Albañil", "Carpintero", "Pintor", "Herrero", "Jardinero", "Mecánico", "Técnico de PCs", "Diseñador Gráfico", "Desarrollador Web", "Fotógrafo", "Chofer", "Delivery", "Profesor", "Peluquero", "Masajista", "Cocinero", "Limpieza", "Cerrajero", "Gasista", "Soldador", "Vendedor", "Abogado", "Contador"])
+
+class Usuario(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    nombre = db.Column(db.String(100))
+    apellido = db.Column(db.String(100))
+    email = db.Column(db.String(100))
+    telefono = db.Column(db.String(50))
+    ciudad = db.Column(db.String(100))
+    oficio = db.Column(db.String(100))
+    descripcion = db.Column(db.Text)
+    foto = db.Column(db.String(300))
+
+with app.app_context(): db.create_all()
 
 @app.route('/')
-def home():
-    return render_template('index.html')
+def home(): return render_template('index.html')
 
 @app.route('/categorias', methods=['GET'])
-def obtener_categorias():
-    return jsonify(OFICIOS)
+def get_categorias(): return jsonify(OFICIOS)
 
-if __name__ == '__main__':
-    app.run()
+@app.route('/ciudades', methods=['GET'])
+def get_ciudades(): return jsonify(CIUDADES)
+
+@app.route('/register', methods=['POST'])
+def register():
+    data = request.form
+    # Aquí iría la lógica de guardar archivo si quieres fotos
+    nuevo = Usuario(nombre=data['nombre'], apellido=data['apellido'], email=data['email'], 
+                    telefono=data['telefono'], ciudad=data['ciudad'], oficio=data['oficio'], 
+                    descripcion=data['descripcion'])
+    db.session.add(nuevo)
+    db.session.commit()
+    return jsonify({"mensaje": "¡Guardado con éxito!"})
+
+if __name__ == '__main__': app.run()
