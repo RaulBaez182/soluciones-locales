@@ -7,57 +7,59 @@
 
 <style>
 body{
-    margin:0;
-    font-family:Arial;
-    background: linear-gradient(135deg,#0f172a,#1e3c72);
-    color:white;
+margin:0;
+font-family:Arial;
+background: linear-gradient(135deg,#0f172a,#1e3c72);
+color:white;
 }
 
 .hero{
-    text-align:center;
-    padding:30px;
-}
-
-.hero h1{
-    font-size:30px;
-    font-weight:bold;
+text-align:center;
+padding:25px;
 }
 
 .cardx{
-    background:white;
-    color:black;
-    border-radius:20px;
-    padding:15px;
-    margin:15px;
-    box-shadow:0 10px 30px rgba(0,0,0,0.3);
+background:white;
+color:black;
+border-radius:18px;
+padding:15px;
+margin:12px;
+box-shadow:0 10px 25px rgba(0,0,0,0.3);
 }
 
 .perfil{
-    width:80px;
-    height:80px;
-    border-radius:50%;
-    object-fit:cover;
-}
-
-.galeria img{
-    width:100%;
-    height:90px;
-    object-fit:cover;
-    border-radius:10px;
+width:70px;
+height:70px;
+border-radius:50%;
+object-fit:cover;
 }
 
 .badge{
-    background:#1e3c72;
+background:#1e3c72;
+color:white;
+padding:5px 10px;
+border-radius:10px;
 }
 
-.navbar{
-    position:fixed;
-    bottom:0;
-    width:100%;
-    background:white;
-    display:flex;
-    justify-content:space-around;
-    padding:10px;
+.gal img{
+width:100%;
+height:90px;
+object-fit:cover;
+border-radius:10px;
+}
+
+button{
+border-radius:12px !important;
+}
+
+.nav{
+position:fixed;
+bottom:0;
+width:100%;
+background:white;
+display:flex;
+justify-content:space-around;
+padding:10px;
 }
 </style>
 </head>
@@ -65,20 +67,20 @@ body{
 <body>
 
 <div class="hero">
-    <h1>🛠️ Soluciones Locales</h1>
-    <p>Encuentra profesionales cerca tuyo</p>
+<h2>🛠️ Soluciones Locales</h2>
+<p>Encuentra profesionales cerca tuyo</p>
 </div>
 
 <div class="cardx">
-<h5>🔍 Buscar profesionales</h5>
+<h5>🔍 Buscar</h5>
 
 <select id="oficio" class="form-control mb-2"></select>
 <select id="ciudad" class="form-control mb-2"></select>
 
-<button onclick="buscar()" class="btn btn-primary w-100">
-Buscar
-</button>
+<button onclick="buscar()" class="btn btn-primary w-100">Buscar</button>
 </div>
+
+<div id="resultados"></div>
 
 <div class="cardx">
 <h5>💼 Publicar servicio</h5>
@@ -87,76 +89,64 @@ Buscar
 
 <input name="nombre" class="form-control mb-2" placeholder="Nombre">
 <input name="apellido" class="form-control mb-2" placeholder="Apellido">
-<input name="email" class="form-control mb-2" placeholder="Email">
-<input name="telefono" class="form-control mb-2" placeholder="Teléfono">
+<input name="email" class="form-control mb-2">
+<input name="telefono" class="form-control mb-2">
 
 <select name="ciudad" id="ciudad2" class="form-control mb-2"></select>
 <select name="oficio" id="oficio2" class="form-control mb-2"></select>
 
-<textarea name="descripcion" class="form-control mb-2" placeholder="Descripción"></textarea>
+<textarea name="descripcion" class="form-control mb-2"></textarea>
 
-<label>Foto perfil</label>
 <input type="file" name="perfil" class="form-control mb-2">
-
-<label>3 fotos trabajos</label>
 <input type="file" name="trabajos" multiple class="form-control mb-2">
 
 <button class="btn btn-success w-100">Publicar</button>
-
 </form>
 </div>
 
-<div id="resultados"></div>
-
-<div class="navbar">
-<button onclick="scroll(0,0)">🏠 Inicio</button>
-<button onclick="document.getElementById('form').scrollIntoView()">➕ Publicar</button>
+<div class="nav">
+<button onclick="scroll(0,0)">🏠</button>
+<button onclick="document.getElementById('form').scrollIntoView()">➕</button>
 </div>
 
 <script>
 
 async function init(){
+let o = await (await fetch("/categorias")).json()
+let c = await (await fetch("/ciudades")).json()
 
-let o = await fetch("/categorias")
-o = await o.json()
-
-let c = await fetch("/ciudades")
-c = await c.json()
-
-for(let s of [oficio, oficio2]){
-    s.innerHTML = o.map(x => `<option>${x}</option>`).join("")
-}
-
-for(let s of [ciudad, ciudad2]){
-    s.innerHTML = c.map(x => `<option>${x}</option>`).join("")
-}
-
+oficio.innerHTML = oficio2.innerHTML = o.map(x=>`<option>${x}</option>`).join("")
+ciudad.innerHTML = ciudad2.innerHTML = c.map(x=>`<option>${x}</option>`).join("")
 }
 
 async function buscar(){
 
-let r = await fetch(`/buscar?oficio=${oficio.value}&ciudad=${ciudad.value}`)
-r = await r.json()
+let r = await (await fetch(`/buscar?oficio=${oficio.value}&ciudad=${ciudad.value}`)).json()
 
-resultados.innerHTML = ""
+resultados.innerHTML=""
 
-r.forEach(x => {
+r.forEach(x=>{
 
 resultados.innerHTML += `
 <div class="cardx">
 
 <img src="${x.perfil}" class="perfil">
-
 <h4>${x.nombre}</h4>
+
 <span class="badge">${x.oficio}</span>
 <p>${x.descripcion}</p>
 <p>📍 ${x.ciudad}</p>
-<p>📞 ${x.telefono}</p>
+<p>⭐ ${x.rating}</p>
 
-<div class="row galeria">
-${x.imagenes.filter(i=>i).map(i =>
-`<div class="col-4"><img src="${i}"></div>`
-).join("")}
+<a class="btn btn-success w-100"
+href="https://wa.me/${x.telefono}">
+💬 WhatsApp
+</a>
+
+<div class="row gal mt-2">
+${x.imagenes.filter(i=>i).map(i=>`
+<div class="col-4"><img src="${i}"></div>
+`).join("")}
 </div>
 
 </div>
@@ -165,22 +155,15 @@ ${x.imagenes.filter(i=>i).map(i =>
 
 }
 
-form.onsubmit = async e => {
+form.onsubmit = async e=>{
 e.preventDefault()
-
 let fd = new FormData(form)
-
-await fetch("/register", {
-method:"POST",
-body:fd
-})
-
-alert("Publicado con éxito 🚀")
+await fetch("/register",{method:"POST",body:fd})
+alert("Publicado 🚀")
 form.reset()
 }
 
 init()
-
 </script>
 
 </body>
