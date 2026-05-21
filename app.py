@@ -16,7 +16,7 @@ os.makedirs("static/uploads/perfiles", exist_ok=True)
 os.makedirs("static/uploads/trabajos", exist_ok=True)
 
 # =========================
-# MODELOS
+# MODELOS (Estructura profesional tipo Ñamba'apo)
 # =========================
 
 class Servicio(db.Model):
@@ -31,12 +31,13 @@ class Servicio(db.Model):
     img1 = db.Column(db.String(300))
     img2 = db.Column(db.String(300))
     img3 = db.Column(db.String(300))
+     verificado = db.Column(db.Boolean, default=False) # Copiado de Ñamba'apo: Check de confianza
 
 class Review(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    servicio_id = db.Column(db.Integer)
+    servicio_id = db.Column(db.Integer, db.ForeignKey('servicio.id'))
     nombre = db.Column(db.String(100))
-    estrellas = db.Column(db.Integer)
+    estrellas = db.Column(db.Integer) # 1 al 5
     comentario = db.Column(db.Text)
 
 class Favorito(db.Model):
@@ -48,19 +49,17 @@ with app.app_context():
     db.create_all()
 
 # =========================
-# RUTAS DE DATOS PARA LOS SELECTS (Faltaban para que funcione el HTML)
+# LISTAS OFICIALES LOCALES
 # =========================
 
 @app.route("/categorias")
 def categorias():
-    # Puedes cambiar o ampliar esta lista con los oficios que quieras
-    lista_oficios = ["Plomero", "Electricista", "Carpintero", "Pintor", "Albañil", "Mecánico"]
+    lista_oficios = ["Plomero", "Electricista", "Carpintero", "Pintor", "Albañil", "Mecánico", "Fumigador", "Fleltero", "Cerrajero"]
     return jsonify(lista_oficios)
 
 @app.route("/ciudades")
 def ciudades():
-    # Puedes cambiar o ampliar esta lista con las ciudades que quieras
-    lista_ciudades = ["Asunción", "San Lorenzo", "Luque", "Lambaré", "Fernando de la Mora", "Capiatá"]
+    lista_ciudades = ["Asunción", "San Lorenzo", "Luque", "Lambaré", "Fernando de la Mora", "Capiatá", "Mariano Roque Alonso", "Ñemby"]
     return jsonify(lista_ciudades)
 
 # =========================
@@ -81,20 +80,16 @@ def save(file, folder):
     name = secure_filename(file.filename)
     path = os.path.join(app.config["UPLOAD_FOLDER"], folder, name)
     file.save(path)
-    # Corregido: Reemplaza barras de Windows \ por / para que las imágenes se carguen bien en la web
     return "/" + path.replace("\\", "/")
 
 # =========================
-# CREAR SERVICIO
+# REGISTRO
 # =========================
 
 @app.route("/register", methods=["POST"])
 def register():
-
     d = request.form
-
     perfil = save(request.files.get("perfil"), "perfiles")
-
     imgs = request.files.getlist("trabajos")
     gal = [save(i,"trabajos") for i in imgs[:3]]
 
@@ -111,36 +106,40 @@ def register():
         perfil=perfil,
         img1=gal[0],
         img2=gal[1],
-        img3=gal[2]
+        img3=gal[2],
+        verificado=False
     )
-
     db.session.add(s)
     db.session.commit()
-
     return jsonify({"ok": True})
 
 # =========================
-# BUSCAR
+# BUSCADOR CON RATING REAL (Idéntico a Ñamba'apo)
 # =========================
 
 @app.route("/buscar")
 def buscar():
-
     oficio = request.args.get("oficio","")
     ciudad = request.args.get("ciudad","")
 
     q = Servicio.query
-
     if oficio:
         q = q.filter_by(oficio=oficio)
-
     if ciudad:
         q = q.filter_by(ciudad=ciudad)
-
+    
     data = q.all()
+    resultado = []
 
-    return jsonify([
-        {
+    for s in data:
+        # Buscamos las reseñas reales de este trabajador en la base de datos
+        reseñas = Review.query.filter_by(servicio_id=s.id).all()
+        if reseñas:
+            promedio_estrellas = round(sum(r.estrellas for r in reseñas) / len(reseñas), 1)
+        else:
+            promedio_estrellas = 0.0 # Sin calificaciones aún
+
+        resultado.append({
             "id": s.id,
             "nombre": f"{s.nombre} {s.apellido}",
             "telefono": s.telefono,
@@ -149,22 +148,24 @@ def buscar():
             "descripcion": s.descripcion,
             "perfil": s.perfil,
             "imagenes": [s.img1, s.img2, s.img3],
-            "rating": round(4 + (s.id % 10) * 0.1, 1)
-        }
-        for s in data
-    ])
+            "verificado": s.verificado,
+            "rating": promedio_estrellas if promedio_estrellas > 0 else "Nuevo"
+        })
+
+    return jsonify(resultado)
 
 # =========================
-# PERFIL
+# PERFIL DETALLADO + COMENTARIOS
 # =========================
 
 @app.route("/perfil/<int:id>")
 def perfil(id):
-
     s = Servicio.query.get(id)
-
     if not s:
         return jsonify({"error":"no existe"})
+
+    reseñas = Review.query.filter_by(servicio_id=s.id).all()
+    promedio = round(sum(r.estrellas for r in reseñas) / len(reseñas), 1) if reseñas else 0.0
 
     return jsonify({
         "id": s.id,
@@ -175,47 +176,34 @@ def perfil(id):
         "descripcion": s.descripcion,
         "perfil": s.perfil,
         "imagenes": [s.img1, s.img2, s.img3],
-        "rating": 4.7
+        "verificado": s.verificado,
+        "rating": promedio,
+        "comentarios": [{"usuario": r.nombre, "estrellas": r.estrellas, "texto": r.comentario} for r in reseñas]
     })
 
 # =========================
-# REVIEW
+# RESEÑAS Y FAVORITOS
 # =========================
 
 @app.route("/review", methods=["POST"])
 def review():
-
     d = request.json
-
     r = Review(
         servicio_id=d["servicio_id"],
         nombre=d["nombre"],
-        estrellas=d["estrellas"],
+        estrellas=int(d["estrellas"]),
         comentario=d["comentario"]
     )
-
     db.session.add(r)
     db.session.commit()
-
     return jsonify({"ok": True})
-
-# =========================
-# FAVORITOS
-# =========================
 
 @app.route("/fav", methods=["POST"])
 def fav():
-
     d = request.json
-
-    f = Favorito(
-        servicio_id=d["servicio_id"],
-        user_key=d["user_key"]
-    )
-
+    f = Favorito(servicio_id=d["servicio_id"], user_key=d["user_key"])
     db.session.add(f)
     db.session.commit()
-
     return jsonify({"ok": True})
 
 if __name__ == "__main__":
