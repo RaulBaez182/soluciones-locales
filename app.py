@@ -48,6 +48,22 @@ with app.app_context():
     db.create_all()
 
 # =========================
+# RUTAS DE DATOS PARA LOS SELECTS (Faltaban para que funcione el HTML)
+# =========================
+
+@app.route("/categorias")
+def categorias():
+    # Puedes cambiar o ampliar esta lista con los oficios que quieras
+    lista_oficios = ["Plomero", "Electricista", "Carpintero", "Pintor", "Albañil", "Mecánico"]
+    return jsonify(lista_oficios)
+
+@app.route("/ciudades")
+def ciudades():
+    # Puedes cambiar o ampliar esta lista con las ciudades que quieras
+    lista_ciudades = ["Asunción", "San Lorenzo", "Luque", "Lambaré", "Fernando de la Mora", "Capiatá"]
+    return jsonify(lista_ciudades)
+
+# =========================
 # HOME
 # =========================
 
@@ -60,12 +76,13 @@ def home():
 # =========================
 
 def save(file, folder):
-    if not file:
+    if not file or file.filename == '':
         return ""
     name = secure_filename(file.filename)
     path = os.path.join(app.config["UPLOAD_FOLDER"], folder, name)
     file.save(path)
-    return "/" + path
+    # Corregido: Reemplaza barras de Windows \ por / para que las imágenes se carguen bien en la web
+    return "/" + path.replace("\\", "/")
 
 # =========================
 # CREAR SERVICIO
