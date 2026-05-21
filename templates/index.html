@@ -4,242 +4,382 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Soluciones Locales</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body {
-            margin: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #0f172a, #1e3c72);
-            color: white;
-            min-height: 100vh;
-            padding-bottom: 80px;
+        :root {
+            --primary: #009688;
+            --primary-dark: #00796B;
+            --bg: #F5F7FA;
+            --text: #333;
+            --card-bg: #FFFFFF;
         }
 
-        .hero {
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #1A252F; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+
+        /* Contenedor Vista Móvil */
+        .phone-container {
+            width: 100%;
+            max-width: 420px;
+            height: 92vh;
+            background-color: var(--bg);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+            border-radius: 16px;
+        }
+
+        /* Barra Superior */
+        .header {
+            background-color: var(--primary);
+            color: white;
+            padding: 18px;
             text-align: center;
-            padding: 30px 20px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            position: relative;
+        }
+        .back-btn {
+            position: absolute;
+            left: 15px;
+            top: 18px;
+            background: none;
+            border: none;
+            color: white;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            display: none;
         }
 
-        .hero h2 {
-            font-weight: 700;
-        }
+        /* Contenido Dinámico */
+        .content { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 80px; }
+        .view { display: none; }
+        .view.active { display: block; }
 
-        .cardx {
-            background: rgba(255, 255, 255, 0.95);
-            color: #1e293b;
-            border-radius: 20px;
+        /* Pantalla de Inicio (Home) */
+        .home-logo-container { text-align: center; margin-top: 40px; margin-bottom: 50px; }
+        .home-logo { font-size: 4.5rem; color: var(--primary); }
+        .home-title { color: var(--primary); font-size: 1.8rem; margin-top: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
+        .home-btn {
+            display: block;
+            width: 100%;
+            background-color: var(--primary);
+            color: white;
+            border: none;
             padding: 20px;
-            margin: 15px auto;
-            max-width: 500px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-        }
-
-        .cardx h5 {
-            font-weight: 600;
-            margin-bottom: 15px;
-            color: #0f172a;
-            border-bottom: 2px solid #e2e8f0;
-            padding-bottom: 8px;
-        }
-
-        .form-control, .form-select {
             border-radius: 12px;
-            border: 1px solid #cbd5e1;
-            padding: 10px;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: left;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
+        .home-btn:active { background-color: var(--primary-dark); }
 
-        .perfil-img {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 3px solid #1e3c72;
-        }
-
-        .badge-oficio {
-            background: #1e3c72;
-            color: white;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            display: inline-block;
-        }
-
-        .badge-verificado {
-            background: #10b981;
-            color: white;
-            padding: 4px 8px;
+        /* Inputs y Selects formales */
+        .form-group { margin-bottom: 15px; }
+        .form-control {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #DADADA;
             border-radius: 8px;
-            font-size: 0.75rem;
-            margin-left: 5px;
+            font-size: 1rem;
+            background-color: white;
+            outline: none;
+        }
+        .form-control:focus { border-color: var(--primary); }
+        .btn-block {
+            width: 100%;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
         }
 
-        .gal img {
-            width: 100%;
-            height: 90px;
-            object-fit: cover;
+        /* Tarjetas de Profesionales */
+        .worker-card {
+            background: var(--card-bg);
             border-radius: 12px;
-            margin-top: 8px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            padding: 15px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            border-left: 4px solid var(--primary);
         }
+        .worker-img { width: 55px; height: 55px; border-radius: 50%; object-fit: cover; margin-right: 15px; background: #EEE; }
+        .worker-info { flex: 1; }
+        .worker-name { font-weight: bold; font-size: 1.1rem; color: #222; }
+        .worker-job { color: var(--primary); font-size: 0.9rem; font-weight: 600; }
+        .worker-city { color: #777; font-size: 0.85rem; margin-top: 2px; }
 
-        .nav-inferior {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background: white;
+        /* Detalles del Perfil */
+        .profile-header { text-align: center; margin-bottom: 20px; }
+        .profile-main-img { width: 110px; height: 110px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary); background: #EEE; }
+        .profile-name { font-size: 1.4rem; font-weight: bold; margin-top: 10px; }
+        .profile-tag { display: inline-block; background: #E0F2F1; color: var(--primary-dark); padding: 5px 14px; border-radius: 20px; font-weight: bold; font-size: 0.85rem; margin-top: 5px; }
+        .profile-body { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .profile-section-title { font-weight: bold; margin-bottom: 6px; color: #444; font-size: 0.95rem; text-transform: uppercase; }
+        .profile-desc { color: #555; line-height: 1.5; margin-bottom: 20px; font-size: 0.95rem; }
+        
+        /* Botones de Acción Telefónica */
+        .contact-box { display: flex; gap: 10px; }
+        .btn-contact { flex: 1; text-align: center; padding: 14px; border-radius: 8px; text-decoration: none; font-weight: bold; color: white; font-size: 0.95rem; }
+        .btn-whatsapp { background-color: #25D366; }
+        .btn-call { background-color: #007bff; }
+
+        /* Menú Inferior fijo */
+        .nav-bar {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 65px;
+            background-color: white;
+            border-top: 1px solid #EEE;
             display: flex;
             justify-content: space-around;
-            padding: 12px;
-            box-shadow: 0 -5px 20px rgba(0,0,0,0.2);
-            z-index: 1000;
+            align-items: center;
         }
-
-        .nav-btn {
-            border: none;
-            background: none;
-            font-size: 1.5rem;
-            padding: 5px 20px;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-
-        .nav-btn:hover {
-            transform: scale(1.1);
-        }
-
-        .btn-custom {
-            border-radius: 12px;
-            padding: 10px;
-            font-weight: 600;
-        }
+        .nav-item { background: none; border: none; color: #999; font-size: 0.8rem; cursor: pointer; display: flex; flex-direction: column; align-items: center; width: 33%; height: 100%; justify-content: center; }
+        .nav-item.active { color: var(--primary); font-weight: bold; }
+        .nav-icon { font-size: 1.3rem; margin-bottom: 2px; }
     </style>
 </head>
 <body>
 
-    <div class="hero">
-        <h2>🛠️ Soluciones Locales</h2>
-        <p class="text-white-50">Encuentra profesionales de confianza en tu zona</p>
-    </div>
-
-    <div class="cardx">
-        <h5>🔍 Buscar Profesional</h5>
-        <div class="mb-3">
-            <label class="form-label font-weight-bold">¿Qué oficio buscas?</label>
-            <select id="oficio" class="form-select"></select>
+    <div class="phone-container">
+        <div class="header">
+            <button class="back-btn" id="backBtn" onclick="goBack()">◀</button>
+            <span id="headerTitle">Soluciones Locales</span>
         </div>
-        <div class="mb-3">
-            <label class="form-label">¿En qué ciudad?</label>
-            <select id="ciudad" class="form-select"></select>
-        </div>
-        <button onclick="buscar()" class="btn btn-primary w-100 btn-custom">Buscar Ahora</button>
-    </div>
 
-    <div id="resultados" class="container"></div>
-
-    <div id="seccion-publicar" class="cardx">
-        <h5>💼 Publicar mi Servicio</h5>
-        <form id="form">
-            <input name="nombre" class="form-control mb-2" placeholder="Nombre" required>
-            <input name="apellido" class="form-control mb-2" placeholder="Apellido" required>
-            <input name="telefono" class="form-control mb-2" placeholder="Teléfono (Ej: 0981xxxxxx)" required>
-
-            <label class="form-label mt-2 mb-1">Tu Ubicación y Rubro:</label>
-            <select name="ciudad" id="ciudad2" class="form-select mb-2"></select>
-            <select name="oficio" id="oficio2" class="form-select mb-2"></select>
-
-            <textarea name="descripcion" class="form-control mb-3" placeholder="Describe brevemente los trabajos que realizas..." rows="3" required></textarea>
-
-            <div class="mb-2">
-                <label class="form-label">Foto de Perfil:</label>
-                <input type="file" name="perfil" class="form-control">
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Fotos de tus Trabajos (Máx 3):</label>
-                <input type="file" name="trabajos" multiple class="form-control">
+        <div class="content">
+            <div id="view-home" class="view active">
+                <div class="home-logo-container">
+                    <div class="home-logo">🛠️</div>
+                    <div class="home-title">Soluciones Locales</div>
+                    <p style="color: #777; margin-top: 5px; font-size: 0.95rem;">Profesionales de confianza cerca tuyo</p>
+                </div>
+                <button class="home-btn" onclick="navigateTo('view-buscar', 'Buscar Profesional')">
+                    <span style="font-size: 1.3rem; display:block; margin-bottom: 3px;">🔍 Quiero Contratar</span>
+                    <small style="font-weight: normal; color: #E0F2F1;">Encuentra electricistas, plomeros y más</small>
+                </button>
+                <button class="home-btn" onclick="navigateTo('view-publicar', 'Ofrecer Servicios')">
+                    <span style="font-size: 1.3rem; display:block; margin-bottom: 3px;">💼 Ofrecer mis Servicios</span>
+                    <small style="font-weight: normal; color: #E0F2F1;">Publica tu perfil para recibir llamadas</small>
+                </button>
             </div>
 
-            <button class="btn btn-success w-100 btn-custom">Registrarme Gratis 🚀</button>
-        </form>
-    </div>
+            <div id="view-buscar" class="view">
+                <div style="background: white; padding: 15px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.02);">
+                    <div class="form-group">
+                        <input type="text" id="searchOficio" class="form-control" placeholder="¿Qué oficio necesitas? (Ej: Plomero)">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="searchCiudad" class="form-control" placeholder="¿En qué ciudad? (Ej: Asunción)">
+                    </div>
+                    <button class="btn-block" onclick="ejecutarBusqueda()">Buscar Ahora</button>
+                </div>
+                <div id="resultadosBusqueda"></div>
+            </div>
 
-    <div class="nav-inferior">
-        <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="nav-btn">🏠</button>
-        <button onclick="document.getElementById('seccion-publicar').scrollIntoView({behavior: 'smooth'})" class="nav-btn">➕</button>
+            <div id="view-publicar" class="view">
+                <form id="registerForm" onsubmit="registrarTrabajador(event)" style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.02);">
+                    <div class="form-group"><input type="text" id="regNombre" class="form-control" placeholder="Nombre" required></div>
+                    <div class="form-group"><input type="text" id="regApellido" class="form-control" placeholder="Apellido" required></div>
+                    <div class="form-group"><input type="text" id="regTelefono" class="form-control" placeholder="Número de celular (Ej: 0981123456)" required></div>
+                    <div class="form-group">
+                        <select id="regCiudad" class="form-control">
+                            <option value="Asunción">Asunción</option>
+                            <option value="San Lorenzo">San Lorenzo</option>
+                            <option value="Luque">Luque</option>
+                            <option value="Lambaré">Lambaré</option>
+                            <option value="Fernando de la Mora">Fernando de la Mora</option>
+                            <option value="Capiatá">Capiatá</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <select id="regOficio" class="form-control">
+                            <option value="Plomero">Plomero</option>
+                            <option value="Electricista">Electricista</option>
+                            <option value="Carpintero">Carpintero</option>
+                            <option value="Pintor">Pintor</option>
+                            <option value="Albañil">Albañil</option>
+                            <option value="Mecánico">Mecánico</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <textarea id="regDescripcion" class="form-control" rows="4" placeholder="Cuéntale a tus clientes tu experiencia y qué trabajos realizas..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn-block" style="background-color: var(--primary-dark);">Registrar Perfil Profesional</button>
+                </form>
+            </div>
+
+            <div id="view-perfil" class="view">
+                <div class="profile-header">
+                    <img id="profImg" src="" class="profile-main-img">
+                    <div id="profNombre" class="profile-name"></div>
+                    <div id="profOficio" class="profile-tag"></div>
+                </div>
+                <div class="profile-body">
+                    <div class="profile-section-title">📍 Ubicación</div>
+                    <div id="profCiudad" style="color: #666; margin-bottom: 18px; font-size: 1rem;"></div>
+                    
+                    <div class="profile-section-title">📝 Descripción del Servicio</div>
+                    <p id="profDesc" class="profile-desc"></p>
+
+                    <div class="contact-box">
+                        <a id="btnWpp" href="#" target="_blank" class="btn-contact btn-whatsapp">💬 WhatsApp</a>
+                        <a id="btnCall" href="#" class="btn-contact btn-call">📞 Llamar</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="nav-bar">
+            <button class="nav-item active" id="nav-home" onclick="navigateTo('view-home', 'Soluciones Locales')">
+                <span class="nav-icon">🏠</span><span>Inicio</span>
+            </button>
+            <button class="nav-item" id="nav-buscar" onclick="navigateTo('view-buscar', 'Buscar Profesional')">
+                <span class="nav-icon">🔍</span><span>Buscar</span>
+            </button>
+            <button class="nav-item" id="nav-publicar" onclick="navigateTo('view-publicar', 'Ofrecer Servicios')">
+                <span class="nav-icon">➕</span><span>Publicar</span>
+            </button>
+        </div>
     </div>
 
     <script>
-        async function init(){
-            try {
-                let o = await (await fetch("/categorias")).json();
-                let c = await (await fetch("/ciudades")).json();
+        let historialPantallas = ['view-home'];
+        let historialTitulos = ['Soluciones Locales'];
 
-                oficio.innerHTML = `<option value="">Todos los oficios</option>` + o.map(x=>`<option>${x}</option>`).join("");
-                ciudad.innerHTML = `<option value="">Todas las ciudades</option>` + c.map(x=>`<option>${x}</option>`).join("");
-                
-                oficio2.innerHTML = o.map(x=>`<option>${x}</option>`).join("");
-                ciudad2.innerHTML = c.map(x=>`<option>${x}</option>`).join("");
-            } catch(e) {
-                console.error("Error cargando datos iniciales", e);
-            }
-        }
-
-        async function buscar(){
-            let resDiv = document.getElementById("resultados");
-            resDiv.innerHTML = `<div class="text-center my-3"><div class="spinner-border text-light" role="status"></div></div>`;
+        function navigateTo(viewId, title) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             
-            try {
-                let r = await (await fetch(`/buscar?oficio=${oficio.value}&ciudad=${ciudad.value}`)).json();
-                resDiv.innerHTML = "";
+            document.getElementById(viewId).classList.add('active');
+            document.getElementById('headerTitle').innerText = title;
 
-                if(r.length === 0) {
-                    resDiv.innerHTML = `<div class="cardx text-center"><p class="mb-0">No se encontraron profesionales disponibles.</p></div>`;
-                    return;
+            const backBtn = document.getElementById('backBtn');
+            if (viewId === 'view-home') {
+                backBtn.style.display = 'none';
+                historialPantallas = ['view-home'];
+                historialTitulos = ['Soluciones Locales'];
+            } else {
+                backBtn.style.display = 'block';
+                if(historialPantallas[historialPantallas.length - 1] !== viewId) {
+                    historialPantallas.push(viewId);
+                    historialTitulos.push(title);
                 }
+            }
 
-                r.forEach(x=>{
-                    let checkVerificado = x.verificado ? `<span class="badge-verificado">✓ Verificado</span>` : '';
-                    resDiv.innerHTML += `
-                        <div class="cardx">
-                            <div class="d-flex align-items-center mb-3">
-                                <img src="${x.perfil || 'https://via.placeholder.com/70'}" class="perfil-img me-3">
-                                <div>
-                                    <h4 class="mb-0 h5">${x.nombre} ${checkVerificado}</h4>
-                                    <span class="badge-oficio mt-1">${x.oficio}</span>
-                                </div>
-                            </div>
-                            <p class="mb-2"><strong>Descripción:</strong> ${x.descripcion}</p>
-                            <p class="mb-2">📍 <strong>Ciudad:</strong> ${x.ciudad}</p>
-                            <p class="mb-3">⭐ <strong>Rating:</strong> ${x.rating}</p>
+            const navIdMap = {'view-home': 'nav-home', 'view-buscar': 'nav-buscar', 'view-publicar': 'nav-publicar'};
+            if (navIdMap[viewId]) {
+                document.getElementById(navIdMap[viewId]).classList.add('active');
+            }
+            
+            if (viewId === 'view-buscar') { ejecutarBusqueda(); }
+        }
 
-                            <a class="btn btn-success w-100 btn-custom" href="https://wa.me/${x.telefono}" target="_blank">
-                                💬 Contactar por WhatsApp
-                            </a>
-
-                            <div class="row gal">
-                                ${x.imagenes.filter(i=>i).map(i=>`
-                                    <div class="col-4"><img src="${i}"></div>
-                                `).join("")}
-                            </div>
-                        </div>
-                    `;
-                });
-            } catch (e) {
-                resDiv.innerHTML = `<div class="cardx text-center text-danger"><p class="mb-0">Error al realizar la búsqueda.</p></div>`;
+        function goBack() {
+            if (historialPantallas.length > 1) {
+                historialPantallas.pop();
+                historialTitulos.pop();
+                const prevView = historialPantallas[historialPantallas.length - 1];
+                const prevTitle = historialTitulos[historialTitulos.length - 1];
+                navigateTo(prevView, prevTitle);
+                historialPantallas.pop();
+                historialTitulos.pop();
             }
         }
 
-        form.onsubmit = async e=>{
-            e.preventDefault();
-            let fd = new FormData(form);
-            await fetch("/register", {method:"POST", body:fd});
-            alert("¡Tu servicio fue publicado con éxito! 🚀");
-            form.reset();
-            buscar();
-        };
+        function ejecutarBusqueda() {
+            const oficio = document.getElementById('searchOficio').value;
+            const ciudad = document.getElementById('searchCiudad').value;
+            
+            fetch(`/buscar?oficio=${oficio}&ciudad=${ciudad}`)
+                .then(res => res.json())
+                .then(data => {
+                    const contenedor = document.getElementById('resultadosBusqueda');
+                    contenedor.innerHTML = '';
+                    
+                    if(data.length === 0) {
+                        contenedor.innerHTML = '<p style="text-align:center; color:#888; margin-top:30px;">No hay profesionales registrados en este rubro.</p>';
+                        return;
+                    }
 
-        init();
+                    data.forEach(worker => {
+                        const card = document.createElement('div');
+                        card.className = 'worker-card';
+                        card.onclick = () => verPerfilCompleto(worker.id);
+                        card.innerHTML = `
+                            <img src="${worker.perfil_url}" class="worker-img">
+                            <div class="worker-info">
+                                <div class="worker-name">${worker.nombre}</div>
+                                <div class="worker-job">${worker.oficio}</div>
+                                <div class="worker-city">📍 ${worker.ciudad}</div>
+                            </div>
+                        `;
+                        contenedor.appendChild(card);
+                    });
+                });
+        }
+
+        function verPerfilCompleto(id) {
+            fetch(`/perfil/${id}`)
+                .then(res => res.json())
+                .then(worker => {
+                    if (worker.error) return;
+                    document.getElementById('profImg').src = worker.perfil_url;
+                    document.getElementById('profNombre').innerText = worker.nombre;
+                    document.getElementById('profOficio').innerText = worker.oficio;
+                    document.getElementById('profCiudad').innerText = worker.ciudad;
+                    document.getElementById('profDesc').innerText = worker.descripcion || 'Sin descripción añadida.';
+                    
+                    // Conversión limpia para link directo de WhatsApp de Paraguay
+                    let numLimpio = worker.telefono.trim();
+                    if(numLimpio.startsWith('0')) numLimpio = numLimpio.substring(1);
+                    
+                    document.getElementById('btnWpp').href = `https://wa.me/595${numLimpio}`;
+                    document.getElementById('btnCall').href = `tel:${worker.telefono}`;
+
+                    navigateTo('view-perfil', 'Perfil Profesional');
+                });
+        }
+
+        function registrarTrabajador(e) {
+            e.preventDefault();
+            const data = {
+                nombre: document.getElementById('regNombre').value,
+                apellido: document.getElementById('regApellido').value,
+                telefono: document.getElementById('regTelefono').value,
+                ciudad: document.getElementById('regCiudad').value,
+                oficio: document.getElementById('regOficio').value,
+                descripcion: document.getElementById('regDescripcion').value
+            };
+
+            fetch('/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(res => res.json())
+            .then(res => {
+                if(res.ok) {
+                    alert('¡Tu perfil profesional ha sido publicado con éxito!');
+                    document.getElementById('registerForm').reset();
+                    navigateTo('view-buscar', 'Buscar Profesional');
+                }
+            });
+        }
     </script>
 </body>
 </html>
