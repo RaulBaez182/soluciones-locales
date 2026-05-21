@@ -16,11 +16,11 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: #1A252F; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
 
-        /* Contenedor Vista Móvil */
+        /* Contenedor Vista Móvil Centrada */
         .phone-container {
             width: 100%;
             max-width: 420px;
-            height: 92vh;
+            height: 95vh;
             background-color: var(--bg);
             box-shadow: 0 8px 30px rgba(0,0,0,0.5);
             display: flex;
@@ -48,12 +48,12 @@
             border: none;
             color: white;
             font-weight: bold;
-            font-size: 1rem;
+            font-size: 1.1rem;
             cursor: pointer;
             display: none;
         }
 
-        /* Contenido Dinámico */
+        /* Contenido de Pantallas */
         .content { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 80px; }
         .view { display: none; }
         .view.active { display: block; }
@@ -79,7 +79,7 @@
         }
         .home-btn:active { background-color: var(--primary-dark); }
 
-        /* Inputs y Selects formales */
+        /* Formularios y Selectores */
         .form-group { margin-bottom: 15px; }
         .form-control {
             width: 100%;
@@ -131,13 +131,13 @@
         .profile-section-title { font-weight: bold; margin-bottom: 6px; color: #444; font-size: 0.95rem; text-transform: uppercase; }
         .profile-desc { color: #555; line-height: 1.5; margin-bottom: 20px; font-size: 0.95rem; }
         
-        /* Botones de Acción Telefónica */
+        /* Botones de Contacto Telefónico */
         .contact-box { display: flex; gap: 10px; }
         .btn-contact { flex: 1; text-align: center; padding: 14px; border-radius: 8px; text-decoration: none; font-weight: bold; color: white; font-size: 0.95rem; }
         .btn-whatsapp { background-color: #25D366; }
         .btn-call { background-color: #007bff; }
 
-        /* Menú Inferior fijo */
+        /* Barra de Menú Inferior Fija */
         .nav-bar {
             position: absolute;
             bottom: 0; left: 0; right: 0;
@@ -162,31 +162,48 @@
         </div>
 
         <div class="content">
+            
             <div id="view-home" class="view active">
                 <div class="home-logo-container">
                     <div class="home-logo">🛠️</div>
                     <div class="home-title">Soluciones Locales</div>
-                    <p style="color: #777; margin-top: 5px; font-size: 0.95rem;">Profesionales de confianza cerca tuyo</p>
+                    <p style="color: #777; margin-top: 5px; font-size: 0.95rem;">Profesionales independientes cerca tuyo</p>
                 </div>
                 <button class="home-btn" onclick="navigateTo('view-buscar', 'Buscar Profesional')">
                     <span style="font-size: 1.3rem; display:block; margin-bottom: 3px;">🔍 Quiero Contratar</span>
-                    <small style="font-weight: normal; color: #E0F2F1;">Encuentra electricistas, plomeros y más</small>
+                    <small style="font-weight: normal; color: #E0F2F1;">Encuentra electricistas, plomeros y albañiles</small>
                 </button>
                 <button class="home-btn" onclick="navigateTo('view-publicar', 'Ofrecer Servicios')">
                     <span style="font-size: 1.3rem; display:block; margin-bottom: 3px;">💼 Ofrecer mis Servicios</span>
-                    <small style="font-weight: normal; color: #E0F2F1;">Publica tu perfil para recibir llamadas</small>
+                    <small style="font-weight: normal; color: #E0F2F1;">Regístrate gratis para recibir llamadas de trabajo</small>
                 </button>
             </div>
 
             <div id="view-buscar" class="view">
                 <div style="background: white; padding: 15px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.02);">
                     <div class="form-group">
-                        <input type="text" id="searchOficio" class="form-control" placeholder="¿Qué oficio necesitas? (Ej: Plomero)">
+                        <select id="searchOficio" class="form-control">
+                            <option value="">¿Qué oficio buscas? (Todos)</option>
+                            <option value="Plomero">Plomero</option>
+                            <option value="Electricista">Electricista</option>
+                            <option value="Carpintero">Carpintero</option>
+                            <option value="Pintor">Pintor</option>
+                            <option value="Albañil">Albañil</option>
+                            <option value="Mecánico">Mecánico</option>
+                        </select>
                     </div>
                     <div class="form-group">
-                        <input type="text" id="searchCiudad" class="form-control" placeholder="¿En qué ciudad? (Ej: Asunción)">
+                        <select id="searchCiudad" class="form-control">
+                            <option value="">¿En qué ciudad? (Todas)</option>
+                            <option value="Asunción">Asunción</option>
+                            <option value="San Lorenzo">San Lorenzo</option>
+                            <option value="Luque">Luque</option>
+                            <option value="Lambaré">Lambaré</option>
+                            <option value="Fernando de la Mora">Fernando de la Mora</option>
+                            <option value="Capiatá">Capiatá</option>
+                        </select>
                     </div>
-                    <button class="btn-block" onclick="ejecutarBusqueda()">Buscar Ahora</button>
+                    <button class="btn-block" onclick="ejecutarBusqueda()">Filtrar Lista</button>
                 </div>
                 <div id="resultadosBusqueda"></div>
             </div>
@@ -217,9 +234,9 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <textarea id="regDescripcion" class="form-control" rows="4" placeholder="Cuéntale a tus clientes tu experiencia y qué trabajos realizas..." required></textarea>
+                        <textarea id="regDescripcion" class="form-control" rows="4" placeholder="Describe qué trabajos realizas y tu zona de cobertura..." required></textarea>
                     </div>
-                    <button type="submit" class="btn-block" style="background-color: var(--primary-dark);">Registrar Perfil Profesional</button>
+                    <button type="submit" class="btn-block" style="background-color: var(--primary-dark);">Publicar Perfil Profesional</button>
                 </form>
             </div>
 
@@ -230,10 +247,10 @@
                     <div id="profOficio" class="profile-tag"></div>
                 </div>
                 <div class="profile-body">
-                    <div class="profile-section-title">📍 Ubicación</div>
+                    <div class="profile-section-title">📍 Ciudad Base</div>
                     <div id="profCiudad" style="color: #666; margin-bottom: 18px; font-size: 1rem;"></div>
                     
-                    <div class="profile-section-title">📝 Descripción del Servicio</div>
+                    <div class="profile-section-title">📝 Experiencia y Servicios</div>
                     <p id="profDesc" class="profile-desc"></p>
 
                     <div class="contact-box">
@@ -242,6 +259,7 @@
                     </div>
                 </div>
             </div>
+
         </div>
 
         <div class="nav-bar">
@@ -312,7 +330,7 @@
                     contenedor.innerHTML = '';
                     
                     if(data.length === 0) {
-                        contenedor.innerHTML = '<p style="text-align:center; color:#888; margin-top:30px;">No hay profesionales registrados en este rubro.</p>';
+                        contenedor.innerHTML = '<p style="text-align:center; color:#888; margin-top:30px;">No se encontraron profesionales con estos filtros.</p>';
                         return;
                     }
 
@@ -323,7 +341,7 @@
                         card.innerHTML = `
                             <img src="${worker.perfil_url}" class="worker-img">
                             <div class="worker-info">
-                                <div class="worker-name">${worker.nombre}</div>
+                                <div class="worker-name">${worker.nombre} ${worker.apellido}</div>
                                 <div class="worker-job">${worker.oficio}</div>
                                 <div class="worker-city">📍 ${worker.ciudad}</div>
                             </div>
@@ -342,9 +360,8 @@
                     document.getElementById('profNombre').innerText = worker.nombre;
                     document.getElementById('profOficio').innerText = worker.oficio;
                     document.getElementById('profCiudad').innerText = worker.ciudad;
-                    document.getElementById('profDesc').innerText = worker.descripcion || 'Sin descripción añadida.';
+                    document.getElementById('profDesc').innerText = worker.descripcion || 'Sin descripción disponible.';
                     
-                    // Conversión limpia para link directo de WhatsApp de Paraguay
                     let numLimpio = worker.telefono.trim();
                     if(numLimpio.startsWith('0')) numLimpio = numLimpio.substring(1);
                     
