@@ -1,731 +1,187 @@
 <!DOCTYPE html>
-
 <html lang="es">
-
 <head>
-
 <meta charset="UTF-8">
-
-<meta
-name="viewport"
-content="width=device-width,initial-scale=1">
-
-<title>
-
-Soluciones Locales
-
-</title>
-
-
-<link
-href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-rel="stylesheet">
-
+<title>Soluciones Locales</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
 <style>
-
 body{
-
-background:
-
-linear-gradient(
-135deg,
-#0f172a,
-#1e293b,
-#2563eb
-);
-
-min-height:100vh;
-
-color:white;
-
-padding-bottom:80px;
-
+    margin:0;
+    font-family:Arial;
+    background: linear-gradient(135deg,#0f172a,#1e3c72);
+    color:white;
 }
 
-
-.header{
-
-padding:30px;
-
-text-align:center;
-
+.hero{
+    text-align:center;
+    padding:30px;
 }
 
-
-.logo{
-
-font-size:42px;
-
+.hero h1{
+    font-size:30px;
+    font-weight:bold;
 }
-
 
 .cardx{
-
-background:
-
-rgba(
-255,
-255,
-255,
-0.95
-);
-
-color:black;
-
-border-radius:24px;
-
-padding:20px;
-
-margin-top:20px;
-
-box-shadow:
-
-0 15px 40px
-rgba(
-0,
-0,
-0,
-0.3
-);
-
+    background:white;
+    color:black;
+    border-radius:20px;
+    padding:15px;
+    margin:15px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.3);
 }
-
 
 .perfil{
-
-width:120px;
-
-height:120px;
-
-border-radius:50%;
-
-object-fit:cover;
-
-border:
-
-5px solid
-#2563eb;
-
+    width:80px;
+    height:80px;
+    border-radius:50%;
+    object-fit:cover;
 }
-
-
-.galeria{
-
-display:flex;
-
-gap:10px;
-
-overflow:auto;
-
-}
-
 
 .galeria img{
-
-width:150px;
-
-height:150px;
-
-object-fit:cover;
-
-border-radius:16px;
-
+    width:100%;
+    height:90px;
+    object-fit:cover;
+    border-radius:10px;
 }
 
-
-.preview{
-
-width:100px;
-
-height:100px;
-
-object-fit:cover;
-
-border-radius:15px;
-
-margin:5px;
-
+.badge{
+    background:#1e3c72;
 }
 
-
-button{
-
-border-radius:14px !important;
-
+.navbar{
+    position:fixed;
+    bottom:0;
+    width:100%;
+    background:white;
+    display:flex;
+    justify-content:space-around;
+    padding:10px;
 }
-
-
-input,
-select,
-textarea{
-
-border-radius:12px !important;
-
-}
-
 </style>
-
 </head>
 
 <body>
 
-
-<div
-class="container">
-
-
-<div
-class="header">
-
-<div
-class="logo">
-
-🛠️
-
+<div class="hero">
+    <h1>🛠️ Soluciones Locales</h1>
+    <p>Encuentra profesionales cerca tuyo</p>
 </div>
 
-<h1>
+<div class="cardx">
+<h5>🔍 Buscar profesionales</h5>
 
-Soluciones Locales
+<select id="oficio" class="form-control mb-2"></select>
+<select id="ciudad" class="form-control mb-2"></select>
 
-</h1>
-
-<p>
-
-Encontrá profesionales cerca tuyo
-
-</p>
-
-</div>
-
-
-
-<div
-class="cardx">
-
-<h3>
-
-Buscar Servicios
-
-</h3>
-
-<select
-id="buscar_oficio"
-class="form-control mb-2">
-
-</select>
-
-
-<select
-id="buscar_ciudad"
-class="form-control mb-3">
-
-</select>
-
-
-<button
-onclick="buscar()"
-class="btn btn-primary w-100">
-
+<button onclick="buscar()" class="btn btn-primary w-100">
 Buscar
-
 </button>
-
 </div>
 
+<div class="cardx">
+<h5>💼 Publicar servicio</h5>
 
+<form id="form">
 
+<input name="nombre" class="form-control mb-2" placeholder="Nombre">
+<input name="apellido" class="form-control mb-2" placeholder="Apellido">
+<input name="email" class="form-control mb-2" placeholder="Email">
+<input name="telefono" class="form-control mb-2" placeholder="Teléfono">
 
-<div
-class="cardx">
+<select name="ciudad" id="ciudad2" class="form-control mb-2"></select>
+<select name="oficio" id="oficio2" class="form-control mb-2"></select>
 
-<h3>
+<textarea name="descripcion" class="form-control mb-2" placeholder="Descripción"></textarea>
 
-Ofrecer Servicio
+<label>Foto perfil</label>
+<input type="file" name="perfil" class="form-control mb-2">
 
-</h3>
+<label>3 fotos trabajos</label>
+<input type="file" name="trabajos" multiple class="form-control mb-2">
 
-
-<form
-id="form">
-
-
-<input
-name="nombre"
-placeholder="Nombre"
-class="form-control mb-2"
-required>
-
-
-<input
-name="apellido"
-placeholder="Apellido"
-class="form-control mb-2"
-required>
-
-
-<input
-name="email"
-type="email"
-placeholder="Email"
-class="form-control mb-2"
-required>
-
-
-<input
-name="password"
-type="password"
-placeholder="Contraseña"
-class="form-control mb-2"
-required>
-
-
-<input
-name="telefono"
-placeholder="WhatsApp"
-class="form-control mb-2"
-required>
-
-
-<select
-name="ciudad"
-id="ciudad"
-class="form-control mb-2">
-
-</select>
-
-
-<select
-name="oficio"
-id="oficio"
-class="form-control mb-2">
-
-</select>
-
-
-<textarea
-name="descripcion"
-placeholder="Contanos sobre tu servicio"
-class="form-control mb-2">
-
-</textarea>
-
-
-
-<label>
-
-Foto Perfil
-
-</label>
-
-
-<input
-type="file"
-name="perfil"
-id="perfil"
-class="form-control">
-
-
-<img
-id="previewPerfil"
-class="preview">
-
-
-<br><br>
-
-
-<label>
-
-3 Fotos
-
-</label>
-
-
-<input
-multiple
-type="file"
-name="trabajos"
-id="trabajos"
-class="form-control">
-
-
-<div
-id="previewTrabajos">
-
-</div>
-
-
-<button
-class="btn btn-success w-100 mt-3">
-
-Publicar
-
-</button>
+<button class="btn btn-success w-100">Publicar</button>
 
 </form>
-
 </div>
 
+<div id="resultados"></div>
 
-
-<div
-id="resultados">
-
+<div class="navbar">
+<button onclick="scroll(0,0)">🏠 Inicio</button>
+<button onclick="document.getElementById('form').scrollIntoView()">➕ Publicar</button>
 </div>
-
-
-</div>
-
-
 
 <script>
 
-
 async function init(){
 
-let o=
-await fetch(
-"/categorias"
-)
+let o = await fetch("/categorias")
+o = await o.json()
 
-o=
-await o.json()
+let c = await fetch("/ciudades")
+c = await c.json()
 
-
-let c=
-await fetch(
-"/ciudades"
-)
-
-c=
-await c.json()
-
-
-
-for(
-let s
-of
-[
-buscar_oficio,
-oficio
-]
-){
-
-s.innerHTML=
-
-o.map(
-
-x=>
-
-`<option>
-
-${x}
-
-</option>`
-
-)
-
+for(let s of [oficio, oficio2]){
+    s.innerHTML = o.map(x => `<option>${x}</option>`).join("")
 }
 
-
-
-for(
-let s
-of
-[
-buscar_ciudad,
-ciudad
-]
-){
-
-s.innerHTML=
-
-c.map(
-
-x=>
-
-`<option>
-
-${x}
-
-</option>`
-
-)
-
+for(let s of [ciudad, ciudad2]){
+    s.innerHTML = c.map(x => `<option>${x}</option>`).join("")
 }
 
 }
-
-
-
-perfil.onchange=
-
-e=>{
-
-previewPerfil.src=
-
-URL.createObjectURL(
-
-e.target.files[0]
-
-)
-
-}
-
-
-
-trabajos.onchange=
-
-e=>{
-
-previewTrabajos.innerHTML=
-
-""
-
-
-for(
-
-let f
-
-of
-
-e.target.files
-
-){
-
-previewTrabajos.innerHTML+=
-
-`
-
-<img
-src="${URL.createObjectURL(f)}"
-class="preview">
-
-`
-
-}
-
-}
-
-
-
-form.onsubmit=
-
-async e=>{
-
-e.preventDefault()
-
-let fd=
-
-new FormData(form)
-
-
-await fetch(
-
-"/register",
-
-{
-
-method:
-
-"POST",
-
-body:
-
-fd
-
-}
-
-)
-
-
-alert(
-
-"Servicio publicado"
-
-)
-
-form.reset()
-
-}
-
-
 
 async function buscar(){
 
-let r=
+let r = await fetch(`/buscar?oficio=${oficio.value}&ciudad=${ciudad.value}`)
+r = await r.json()
 
-await fetch(
+resultados.innerHTML = ""
 
-`/buscar?oficio=${buscar_oficio.value}&ciudad=${buscar_ciudad.value}`
+r.forEach(x => {
 
-)
-
-r=
-
-await r.json()
-
-
-resultados.innerHTML=
-
-""
-
-
-r.forEach(
-
-x=>{
-
-
-resultados.innerHTML+=
-
-`
-
+resultados.innerHTML += `
 <div class="cardx">
 
-<div class="text-center">
+<img src="${x.perfil}" class="perfil">
 
-<img
-src="${x.perfil}"
-class="perfil">
+<h4>${x.nombre}</h4>
+<span class="badge">${x.oficio}</span>
+<p>${x.descripcion}</p>
+<p>📍 ${x.ciudad}</p>
+<p>📞 ${x.telefono}</p>
 
-</div>
-
-<h3>
-
-${x.nombre}
-
-</h3>
-
-<p>
-
-⭐
-
-${x.estrellas}
-
-</p>
-
-<p>
-
-❤️
-
-${x.favoritos}
-
-</p>
-
-<p>
-
-📍
-
-${x.ciudad}
-
-</p>
-
-<p>
-
-🛠️
-
-${x.oficio}
-
-</p>
-
-<p>
-
-${x.descripcion}
-
-</p>
-
-<a
-target="_blank"
-href="https://wa.me/${x.telefono}"
-class="btn btn-success">
-
-WhatsApp
-
-</a>
-
-<button
-
-onclick="fav(${x.id})"
-
-class="btn btn-danger">
-
-❤️
-
-</button>
-
-
-<div
-class="galeria mt-3">
-
-${
-
-x.imagenes
-
-.filter(
-
-i=>i
-
-)
-
-.map(
-
-i=>
-
-`
-
-<img
-src="${i}">
-
-`
-
-)
-
-.join(
-
-""
-
-)
-
-}
-
+<div class="row galeria">
+${x.imagenes.filter(i=>i).map(i =>
+`<div class="col-4"><img src="${i}"></div>`
+).join("")}
 </div>
 
 </div>
-
 `
+})
 
 }
 
-)
+form.onsubmit = async e => {
+e.preventDefault()
 
+let fd = new FormData(form)
+
+await fetch("/register", {
+method:"POST",
+body:fd
+})
+
+alert("Publicado con éxito 🚀")
+form.reset()
 }
-
-
-
-async function fav(
-
-id
-
-){
-
-await fetch(
-
-"/favorito/"+id
-
-)
-
-buscar()
-
-}
-
-
 
 init()
 
 </script>
 
-
 </body>
-
 </html>
